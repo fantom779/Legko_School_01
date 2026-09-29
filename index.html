@@ -1,0 +1,2388 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Легко Школа</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#080b12;
+    --card:#111722;
+    --card2:#171e2b;
+    --line:rgba(255,255,255,.08);
+    --text:#f4f7fb;
+    --muted:#8e9aac;
+    --accent:#6c7cff;
+    --accent2:#8c63ff;
+    --danger:#ff526d;
+    --success:#38d39f;
+}
+
+body{
+    font-family:Inter,Arial,sans-serif;
+    background:
+        radial-gradient(circle at 15% 10%,rgba(108,124,255,.16),transparent 30%),
+        radial-gradient(circle at 90% 80%,rgba(140,99,255,.12),transparent 30%),
+        var(--bg);
+    color:var(--text);
+    min-height:100vh;
+}
+
+button,input,select,textarea{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* LOGIN */
+
+#authScreen{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.auth-box{
+    width:100%;
+    max-width:430px;
+    background:rgba(17,23,34,.92);
+    border:1px solid var(--line);
+    border-radius:28px;
+    padding:28px;
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
+    backdrop-filter:blur(20px);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    margin-bottom:25px;
+}
+
+.logo-icon{
+    width:52px;
+    height:52px;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 10px 30px rgba(108,124,255,.3);
+}
+
+.logo h1{
+    font-size:25px;
+}
+
+.logo p{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:3px;
+}
+
+.auth-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    background:#0b0f17;
+    padding:4px;
+    border-radius:13px;
+    margin-bottom:20px;
+}
+
+.auth-tabs button{
+    border:0;
+    background:transparent;
+    color:var(--muted);
+    padding:11px;
+    border-radius:10px;
+}
+
+.auth-tabs button.active{
+    background:var(--card2);
+    color:white;
+}
+
+.field{
+    margin-bottom:14px;
+}
+
+.field label{
+    display:block;
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:7px;
+}
+
+.field input,
+.field select,
+.field textarea{
+    width:100%;
+    background:#0c111a;
+    border:1px solid var(--line);
+    color:white;
+    border-radius:13px;
+    padding:13px 14px;
+    outline:none;
+}
+
+.field textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+    border-color:var(--accent);
+}
+
+.primary{
+    width:100%;
+    border:0;
+    padding:14px;
+    border-radius:14px;
+    color:white;
+    font-weight:700;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 10px 25px rgba(108,124,255,.2);
+}
+
+.auth-message{
+    margin-top:13px;
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+}
+
+/* APP */
+
+#app{
+    min-height:100vh;
+    padding-bottom:90px;
+}
+
+.topbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    padding:17px 18px;
+    background:rgba(8,11,18,.82);
+    backdrop-filter:blur(18px);
+    border-bottom:1px solid var(--line);
+}
+
+.topbar-inner{
+    max-width:1000px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+}
+
+.user-box{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.avatar{
+    width:43px;
+    height:43px;
+    border-radius:14px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+}
+
+.user-name{
+    font-weight:700;
+}
+
+.user-role{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:2px;
+}
+
+.logout{
+    border:1px solid var(--line);
+    background:var(--card);
+    color:white;
+    padding:9px 12px;
+    border-radius:11px;
+}
+
+.content{
+    width:100%;
+    max-width:1000px;
+    margin:auto;
+    padding:22px 17px;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.page-title{
+    font-size:27px;
+    margin-bottom:6px;
+}
+
+.page-subtitle{
+    color:var(--muted);
+    margin-bottom:22px;
+    font-size:14px;
+}
+
+/* CARDS */
+
+.grid{
+    display:grid;
+    gap:14px;
+}
+
+.grid2{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+@media(max-width:650px){
+    .grid2{
+        grid-template-columns:1fr;
+    }
+}
+
+.card{
+    background:linear-gradient(145deg,rgba(23,30,43,.96),rgba(13,18,27,.96));
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:18px;
+}
+
+.card-title{
+    font-weight:800;
+    margin-bottom:7px;
+}
+
+.muted{
+    color:var(--muted);
+}
+
+.big-number{
+    font-size:30px;
+    font-weight:900;
+}
+
+.quick-card{
+    min-height:130px;
+    transition:.2s;
+}
+
+.quick-card:hover{
+    transform:translateY(-2px);
+    border-color:rgba(108,124,255,.35);
+}
+
+.quick-icon{
+    font-size:25px;
+    margin-bottom:13px;
+}
+
+/* SCHEDULE */
+
+.day-tabs{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:7px;
+    margin-bottom:15px;
+}
+
+.day-tabs button{
+    flex:none;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--muted);
+    border-radius:12px;
+    padding:10px 14px;
+}
+
+.day-tabs button.active{
+    background:var(--accent);
+    color:white;
+    border-color:transparent;
+}
+
+.lesson{
+    display:grid;
+    grid-template-columns:50px 1fr auto;
+    align-items:center;
+    gap:13px;
+    padding:15px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:17px;
+    margin-bottom:10px;
+}
+
+.lesson-number{
+    width:40px;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    background:#0b1018;
+    font-weight:800;
+}
+
+.lesson-subject{
+    font-weight:750;
+}
+
+.lesson-time{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:4px;
+}
+
+.lesson-actions{
+    display:flex;
+    gap:6px;
+}
+
+/* HOMEWORK / EVENTS / DUTY */
+
+.item{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:17px;
+    margin-bottom:11px;
+}
+
+.item-head{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.item-title{
+    font-weight:800;
+}
+
+.item-date{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:7px;
+}
+
+.item-description{
+    color:#c4ccda;
+    margin-top:9px;
+    line-height:1.5;
+}
+
+.duty-card{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:18px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    margin-bottom:10px;
+}
+
+.duty-icon{
+    width:48px;
+    height:48px;
+    border-radius:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(108,124,255,.15);
+    font-size:23px;
+}
+
+/* BUTTONS */
+
+.small-btn{
+    border:1px solid var(--line);
+    background:#0b1018;
+    color:white;
+    border-radius:10px;
+    padding:8px 10px;
+    font-size:12px;
+}
+
+.edit-btn{
+    border-color:rgba(108,124,255,.3);
+}
+
+.delete-btn{
+    border-color:rgba(255,82,109,.3);
+    color:#ff8194;
+}
+
+.add-btn{
+    border:0;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:white;
+    padding:11px 14px;
+    border-radius:12px;
+    font-weight:700;
+}
+
+.section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:15px;
+}
+
+.empty{
+    padding:30px 15px;
+    text-align:center;
+    color:var(--muted);
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+    position:fixed;
+    z-index:30;
+    bottom:0;
+    left:0;
+    right:0;
+    padding:9px 8px max(9px,env(safe-area-inset-bottom));
+    background:rgba(8,11,18,.94);
+    border-top:1px solid var(--line);
+    backdrop-filter:blur(20px);
+}
+
+.nav-inner{
+    max-width:650px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+}
+
+.nav-btn{
+    border:0;
+    background:transparent;
+    color:#778195;
+    padding:8px 3px;
+    font-size:10px;
+}
+
+.nav-btn span{
+    display:block;
+    font-size:20px;
+    margin-bottom:3px;
+}
+
+.nav-btn.active{
+    color:white;
+}
+
+/* ADMIN */
+
+.admin-box{
+    border:1px solid rgba(108,124,255,.25);
+    background:rgba(108,124,255,.06);
+}
+
+.admin-label{
+    display:inline-flex;
+    padding:6px 9px;
+    border-radius:9px;
+    background:rgba(108,124,255,.13);
+    color:#aeb7ff;
+    font-size:11px;
+    font-weight:800;
+    margin-bottom:12px;
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(0,0,0,.7);
+    backdrop-filter:blur(7px);
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:100%;
+    max-width:500px;
+    max-height:90vh;
+    overflow:auto;
+    background:#101620;
+    border:1px solid var(--line);
+    border-radius:23px;
+    padding:20px;
+}
+
+.modal-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+}
+
+.close{
+    border:0;
+    background:#0b1018;
+    color:white;
+    width:35px;
+    height:35px;
+    border-radius:10px;
+}
+
+.form-actions{
+    display:flex;
+    gap:9px;
+    margin-top:15px;
+}
+
+.form-actions button{
+    flex:1;
+}
+
+.secondary{
+    border:1px solid var(--line);
+    background:#0b1018;
+    color:white;
+    border-radius:12px;
+    padding:12px;
+}
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:90px;
+    transform:translateX(-50%);
+    z-index:200;
+    background:#151c28;
+    border:1px solid var(--line);
+    padding:12px 17px;
+    border-radius:13px;
+    display:none;
+    max-width:90%;
+    text-align:center;
+}
+
+.toast.show{
+    display:block;
+}
+</style>
+</head>
+
+<body>
+
+<!-- AUTH -->
+
+<section id="authScreen">
+
+    <div class="auth-box">
+
+        <div class="logo">
+            <div class="logo-icon">🎓</div>
+            <div>
+                <h1>Легко Школа</h1>
+                <p>Твоя школа в одному місці</p>
+            </div>
+        </div>
+
+        <div class="auth-tabs">
+            <button id="loginTab" class="active" onclick="showAuth('login')">
+                Вхід
+            </button>
+
+            <button id="registerTab" onclick="showAuth('register')">
+                Реєстрація
+            </button>
+        </div>
+
+        <form id="authForm">
+
+            <div class="field">
+                <label>Email</label>
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="example@gmail.com"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label>Пароль</label>
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    minlength="6"
+                    required
+                >
+            </div>
+
+            <button class="primary" id="authButton">
+                Увійти
+            </button>
+
+        </form>
+
+        <div class="auth-message" id="authMessage"></div>
+
+    </div>
+
+</section>
+
+
+<!-- APP -->
+
+<section id="app" class="hidden">
+
+    <header class="topbar">
+        <div class="topbar-inner">
+
+            <div class="user-box">
+
+                <div class="avatar" id="avatar">
+                    Л
+                </div>
+
+                <div>
+                    <div class="user-name" id="userName">
+                        Користувач
+                    </div>
+
+                    <div class="user-role" id="userRole">
+                        Учень
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="logout" onclick="logout()">
+                Вийти
+            </button>
+
+        </div>
+    </header>
+
+
+    <main class="content">
+
+        <!-- HOME -->
+
+        <section class="page active" id="page-home">
+
+            <div class="page-title">
+                Привіт 👋
+            </div>
+
+            <div class="page-subtitle">
+                Ласкаво просимо до «Легко Школа»
+            </div>
+
+            <div class="grid grid2">
+
+                <div class="card quick-card" onclick="openPage('schedule')">
+                    <div class="quick-icon">📅</div>
+                    <div class="card-title">Розклад</div>
+                    <div class="muted">Усі уроки по днях</div>
+                </div>
+
+                <div class="card quick-card" onclick="openPage('homework')">
+                    <div class="quick-icon">📚</div>
+                    <div class="card-title">Домашка</div>
+                    <div class="muted">Що потрібно зробити</div>
+                </div>
+
+                <div class="card quick-card" onclick="openPage('events')">
+                    <div class="quick-icon">🎉</div>
+                    <div class="card-title">Події</div>
+                    <div class="muted">Шкільні заходи</div>
+                </div>
+
+                <div class="card quick-card" onclick="openPage('duty')">
+                    <div class="quick-icon">🧹</div>
+                    <div class="card-title">Чергові</div>
+                    <div class="muted">Хто чергує</div>
+                </div>
+
+            </div>
+
+            <div class="card admin-box" id="adminHomeCard" style="margin-top:14px;display:none;">
+                <div class="admin-label">АДМІНІСТРАТОР</div>
+                <div class="card-title">Панель старости</div>
+                <div class="muted">
+                    Ти маєш права змінювати дані школи.
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- SCHEDULE -->
+
+        <section class="page" id="page-schedule">
+
+            <div class="page-title">Розклад</div>
+
+            <div class="page-subtitle">
+                Розклад занять 9-Б
+            </div>
+
+            <div class="day-tabs" id="scheduleDays"></div>
+
+            <div class="section-head">
+                <strong id="scheduleDayTitle">Понеділок</strong>
+
+                <button
+                    class="add-btn admin-only"
+                    onclick="openScheduleModal()"
+                >
+                    + Урок
+                </button>
+            </div>
+
+            <div id="scheduleList"></div>
+
+        </section>
+
+
+        <!-- HOMEWORK -->
+
+        <section class="page" id="page-homework">
+
+            <div class="page-title">Домашня робота</div>
+
+            <div class="page-subtitle">
+                Завдання від старости
+            </div>
+
+            <div class="section-head">
+                <strong>Завдання</strong>
+
+                <button
+                    class="add-btn admin-only"
+                    onclick="openHomeworkModal()"
+                >
+                    + Додати
+                </button>
+            </div>
+
+            <div id="homeworkList"></div>
+
+        </section>
+
+
+        <!-- EVENTS -->
+
+        <section class="page" id="page-events">
+
+            <div class="page-title">Події</div>
+
+            <div class="page-subtitle">
+                Важливі шкільні заходи
+            </div>
+
+            <div class="section-head">
+                <strong>Найближчі події</strong>
+
+                <button
+                    class="add-btn admin-only"
+                    onclick="openEventModal()"
+                >
+                    + Подія
+                </button>
+            </div>
+
+            <div id="eventsList"></div>
+
+        </section>
+
+
+        <!-- DUTY -->
+
+        <section class="page" id="page-duty">
+
+            <div class="page-title">Чергові</div>
+
+            <div class="page-subtitle">
+                Чергування 9-Б
+            </div>
+
+            <div class="section-head">
+                <strong>Розклад чергувань</strong>
+
+                <button
+                    class="add-btn admin-only"
+                    onclick="openDutyModal()"
+                >
+                    + Черговий
+                </button>
+            </div>
+
+            <div id="dutyList"></div>
+
+        </section>
+
+
+        <!-- ADMIN -->
+
+        <section class="page" id="page-admin">
+
+            <div class="page-title">Адмін-панель</div>
+
+            <div class="page-subtitle">
+                Керування «Легко Школа»
+            </div>
+
+            <div class="card admin-box">
+
+                <div class="admin-label">
+                    ТІЛЬКИ ДЛЯ СТАРОСТИ
+                </div>
+
+                <div class="card-title">
+                    Керування даними
+                </div>
+
+                <div class="muted">
+                    Через кнопки у відповідних розділах можна додавати,
+                    редагувати та видаляти інформацію.
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- BOTTOM NAV -->
+
+    <nav class="bottom-nav">
+
+        <div class="nav-inner">
+
+            <button class="nav-btn active" onclick="openPage('home')">
+                <span>⌂</span>
+                Головна
+            </button>
+
+            <button class="nav-btn" onclick="openPage('schedule')">
+                <span>📅</span>
+                Розклад
+            </button>
+
+            <button class="nav-btn" onclick="openPage('homework')">
+                <span>📚</span>
+                Домашка
+            </button>
+
+            <button class="nav-btn" onclick="openPage('events')">
+                <span>🎉</span>
+                Події
+            </button>
+
+            <button class="nav-btn" onclick="openPage('duty')">
+                <span>🧹</span>
+                Чергові
+            </button>
+
+        </div>
+
+    </nav>
+
+</section>
+
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+            <strong id="modalTitle">Додати</strong>
+
+            <button class="close" onclick="closeModal()">
+                ✕
+            </button>
+        </div>
+
+        <div id="modalContent"></div>
+
+    </div>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+    "https://bgagzyzdyhfckovnrvuu.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_d4wmc2RHOoL8QEI4QpY9NQ_BMfpI3_q";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+let currentUser = null;
+let isAdmin = false;
+
+let scheduleData = [];
+let homeworkData = [];
+let eventsData = [];
+let dutyData = [];
+
+let selectedDay = "Понеділок";
+
+const days = [
+    "Понеділок",
+    "Вівторок",
+    "Середа",
+    "Четвер",
+    "П'ятниця"
+];
+
+
+/* =========================================================
+   AUTH UI
+========================================================= */
+
+let authMode = "login";
+
+function showAuth(mode){
+
+    authMode = mode;
+
+    document
+        .getElementById("loginTab")
+        .classList.toggle("active", mode === "login");
+
+    document
+        .getElementById("registerTab")
+        .classList.toggle("active", mode === "register");
+
+    document.getElementById("authButton").textContent =
+        mode === "login"
+        ? "Увійти"
+        : "Створити акаунт";
+
+    document.getElementById("authMessage").textContent = "";
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+document
+    .getElementById("authForm")
+    .addEventListener("submit", async function(e){
+
+        e.preventDefault();
+
+        const email =
+            document.getElementById("email").value.trim();
+
+        const password =
+            document.getElementById("password").value;
+
+        const message =
+            document.getElementById("authMessage");
+
+        message.textContent = "Зачекай...";
+
+        try{
+
+            if(authMode === "login"){
+
+                const {data,error} =
+                    await supabaseClient.auth.signInWithPassword({
+                        email,
+                        password
+                    });
+
+                if(error) throw error;
+
+                message.textContent = "";
+
+            }else{
+
+                const {data,error} =
+                    await supabaseClient.auth.signUp({
+                        email,
+                        password
+                    });
+
+                if(error) throw error;
+
+                message.textContent =
+                    "Акаунт створено. Якщо Supabase просить підтвердити email — перевір пошту.";
+
+            }
+
+        }catch(error){
+
+            console.error(error);
+
+            message.textContent =
+                error.message || "Помилка входу";
+
+        }
+
+    });
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+async function init(){
+
+    const {data} =
+        await supabaseClient.auth.getSession();
+
+    if(data.session){
+
+        await startApp(data.session.user);
+
+    }else{
+
+        showAuthScreen();
+
+    }
+
+    supabaseClient.auth.onAuthStateChange(
+        async (event,session)=>{
+
+            if(session){
+
+                await startApp(session.user);
+
+            }else{
+
+                showAuthScreen();
+
+            }
+
+        }
+    );
+}
+
+init();
+
+
+/* =========================================================
+   START APP
+========================================================= */
+
+async function startApp(user){
+
+    currentUser = user;
+
+    document
+        .getElementById("authScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("app")
+        .classList.remove("hidden");
+
+    await checkAdmin();
+
+    updateUserUI();
+
+    await loadAllData();
+
+    applyAdminUI();
+
+    renderScheduleDays();
+
+    renderSchedule();
+
+    renderHomework();
+
+    renderEvents();
+
+    renderDuty();
+}
+
+
+/* =========================================================
+   CHECK ADMIN
+========================================================= */
+
+async function checkAdmin(){
+
+    isAdmin = false;
+
+    if(!currentUser) return;
+
+    const {data,error} =
+        await supabaseClient
+            .from("admins")
+            .select("user_id")
+            .eq("user_id",currentUser.id)
+            .maybeSingle();
+
+    if(!error && data){
+        isAdmin = true;
+    }
+}
+
+
+/* =========================================================
+   USER UI
+========================================================= */
+
+function updateUserUI(){
+
+    const email =
+        currentUser?.email || "Користувач";
+
+    const short =
+        email.split("@")[0];
+
+    document.getElementById("userName").textContent =
+        short;
+
+    document.getElementById("avatar").textContent =
+        short.charAt(0).toUpperCase();
+
+    document.getElementById("userRole").textContent =
+        isAdmin
+        ? "Староста / Адміністратор"
+        : "Учень";
+}
+
+
+/* =========================================================
+   ADMIN UI
+========================================================= */
+
+function applyAdminUI(){
+
+    document
+        .querySelectorAll(".admin-only")
+        .forEach(el=>{
+            el.style.display =
+                isAdmin ? "" : "none";
+        });
+
+    document
+        .getElementById("adminHomeCard")
+        .style.display =
+            isAdmin ? "block" : "none";
+}
+
+
+/* =========================================================
+   LOAD ALL
+========================================================= */
+
+async function loadAllData(){
+
+    await Promise.all([
+        loadSchedule(),
+        loadHomework(),
+        loadEvents(),
+        loadDuty()
+    ]);
+}
+
+
+/* =========================================================
+   SCHEDULE
+========================================================= */
+
+async function loadSchedule(){
+
+    const {data,error} =
+        await supabaseClient
+            .from("schedule")
+            .select("*")
+            .order("lesson_number",{ascending:true});
+
+    if(error){
+
+        console.error(error);
+        showToast("Не вдалося завантажити розклад");
+        return;
+    }
+
+    scheduleData = data || [];
+}
+
+
+function renderScheduleDays(){
+
+    const container =
+        document.getElementById("scheduleDays");
+
+    container.innerHTML = "";
+
+    days.forEach(day=>{
+
+        const btn =
+            document.createElement("button");
+
+        btn.textContent = day.substring(0,2);
+
+        btn.title = day;
+
+        if(day === selectedDay)
+            btn.classList.add("active");
+
+        btn.onclick = ()=>{
+
+            selectedDay = day;
+
+            renderScheduleDays();
+            renderSchedule();
+
+        };
+
+        container.appendChild(btn);
+
+    });
+
+}
+
+
+function renderSchedule(){
+
+    const list =
+        document.getElementById("scheduleList");
+
+    document.getElementById("scheduleDayTitle")
+        .textContent = selectedDay;
+
+    const items =
+        scheduleData
+            .filter(x=>x.day === selectedDay)
+            .sort((a,b)=>
+                Number(a.lesson_number) -
+                Number(b.lesson_number)
+            );
+
+    if(!items.length){
+
+        list.innerHTML =
+            `<div class="empty">
+                На цей день уроків ще немає.
+             </div>`;
+
+        return;
+    }
+
+    list.innerHTML = items.map(item=>`
+
+        <div class="lesson">
+
+            <div class="lesson-number">
+                ${item.lesson_number}
+            </div>
+
+            <div>
+                <div class="lesson-subject">
+                    ${escapeHTML(item.subject)}
+                </div>
+
+                <div class="lesson-time">
+                    ${escapeHTML(item.lesson_time || "Час не вказано")}
+                </div>
+            </div>
+
+            ${
+                isAdmin
+                ? `
+                <div class="lesson-actions">
+
+                    <button
+                        class="small-btn edit-btn"
+                        onclick="openScheduleModal(${item.id})">
+                        ✏️
+                    </button>
+
+                    <button
+                        class="small-btn delete-btn"
+                        onclick="deleteSchedule(${item.id})">
+                        🗑️
+                    </button>
+
+                </div>
+                `
+                : ""
+            }
+
+        </div>
+
+    `).join("");
+}
+
+
+/* =========================================================
+   SCHEDULE MODAL
+========================================================= */
+
+function openScheduleModal(id=null){
+
+    if(!isAdmin) return;
+
+    const item =
+        id
+        ? scheduleData.find(x=>x.id===id)
+        : null;
+
+    document.getElementById("modalTitle").textContent =
+        item ? "Редагувати урок" : "Додати урок";
+
+    document.getElementById("modalContent").innerHTML = `
+
+        <div class="field">
+            <label>День</label>
+
+            <select id="formDay">
+
+                ${days.map(day=>`
+                    <option
+                        ${(
+                            item?.day || selectedDay
+                        )===day ? "selected":""}>
+                        ${day}
+                    </option>
+                `).join("")}
+
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Номер уроку</label>
+
+            <input
+                id="formLessonNumber"
+                type="number"
+                min="1"
+                max="15"
+                value="${item?.lesson_number || ""}"
+                placeholder="1"
+            >
+        </div>
+
+        <div class="field">
+            <label>Предмет</label>
+
+            <input
+                id="formSubject"
+                value="${escapeAttr(item?.subject || "")}"
+                placeholder="Наприклад: Алгебра"
+            >
+        </div>
+
+        <div class="field">
+            <label>Час</label>
+
+            <input
+                id="formTime"
+                value="${escapeAttr(item?.lesson_time || "")}"
+                placeholder="08:30–09:15"
+            >
+        </div>
+
+        <div class="form-actions">
+
+            <button class="secondary" onclick="closeModal()">
+                Скасувати
+            </button>
+
+            <button
+                class="primary"
+                onclick="saveSchedule(${id || "null"})">
+                Зберегти
+            </button>
+
+        </div>
+    `;
+
+    openModal();
+}
+
+
+async function saveSchedule(id){
+
+    const payload = {
+        day:
+            document.getElementById("formDay").value,
+
+        lesson_number:
+            Number(
+                document.getElementById("formLessonNumber").value
+            ),
+
+        subject:
+            document.getElementById("formSubject").value.trim(),
+
+        lesson_time:
+            document.getElementById("formTime").value.trim()
+    };
+
+    if(!payload.lesson_number || !payload.subject){
+
+        showToast("Заповни номер уроку та предмет");
+        return;
+    }
+
+    let result;
+
+    if(id){
+
+        result =
+            await supabaseClient
+                .from("schedule")
+                .update(payload)
+                .eq("id",id);
+
+    }else{
+
+        result =
+            await supabaseClient
+                .from("schedule")
+                .insert(payload);
+    }
+
+    if(result.error){
+
+        console.error(result.error);
+        showToast(result.error.message);
+        return;
+    }
+
+    closeModal();
+
+    await loadSchedule();
+
+    renderScheduleDays();
+    renderSchedule();
+
+    showToast("Розклад оновлено");
+}
+
+
+async function deleteSchedule(id){
+
+    if(!isAdmin) return;
+
+    if(!confirm("Видалити цей урок?"))
+        return;
+
+    const {error} =
+        await supabaseClient
+            .from("schedule")
+            .delete()
+            .eq("id",id);
+
+    if(error){
+
+        showToast(error.message);
+        return;
+    }
+
+    await loadSchedule();
+
+    renderSchedule();
+
+    showToast("Урок видалено");
+}
+
+
+/* =========================================================
+   HOMEWORK
+========================================================= */
+
+async function loadHomework(){
+
+    const {data,error} =
+        await supabaseClient
+            .from("homework")
+            .select("*")
+            .order("id",{ascending:false});
+
+    if(error){
+
+        console.error(error);
+        return;
+    }
+
+    homeworkData = data || [];
+}
+
+
+function renderHomework(){
+
+    const list =
+        document.getElementById("homeworkList");
+
+    if(!homeworkData.length){
+
+        list.innerHTML =
+            `<div class="empty">
+                Домашніх завдань поки немає.
+             </div>`;
+
+        return;
+    }
+
+    list.innerHTML =
+        homeworkData.map(item=>`
+
+        <div class="item">
+
+            <div class="item-head">
+
+                <div>
+                    <div class="item-title">
+                        📚 ${escapeHTML(item.subject)}
+                    </div>
+
+                    <div class="item-date">
+                        До: ${escapeHTML(item.due_date || "не вказано")}
+                    </div>
+                </div>
+
+                ${
+                    isAdmin
+                    ? `
+                    <div>
+
+                        <button
+                            class="small-btn edit-btn"
+                            onclick="openHomeworkModal(${item.id})">
+                            ✏️
+                        </button>
+
+                        <button
+                            class="small-btn delete-btn"
+                            onclick="deleteHomework(${item.id})">
+                            🗑️
+                        </button>
+
+                    </div>
+                    `
+                    : ""
+                }
+
+            </div>
+
+            <div class="item-description">
+                ${escapeHTML(item.task)}
+            </div>
+
+        </div>
+
+    `).join("");
+}
+
+
+function openHomeworkModal(id=null){
+
+    if(!isAdmin) return;
+
+    const item =
+        id
+        ? homeworkData.find(x=>x.id===id)
+        : null;
+
+    document.getElementById("modalTitle").textContent =
+        item ? "Редагувати домашку" : "Нова домашка";
+
+    document.getElementById("modalContent").innerHTML = `
+
+        <div class="field">
+            <label>Предмет</label>
+
+            <input
+                id="formSubject"
+                value="${escapeAttr(item?.subject || "")}"
+                placeholder="Алгебра"
+            >
+        </div>
+
+        <div class="field">
+            <label>Завдання</label>
+
+            <textarea
+                id="formTask"
+                placeholder="Наприклад: № 245, 246">${escapeHTML(item?.task || "")}</textarea>
+        </div>
+
+        <div class="field">
+            <label>До якої дати</label>
+
+            <input
+                id="formDueDate"
+                value="${escapeAttr(item?.due_date || "")}"
+                placeholder="30.09.2026"
+            >
+        </div>
+
+        <div class="form-actions">
+
+            <button class="secondary" onclick="closeModal()">
+                Скасувати
+            </button>
+
+            <button
+                class="primary"
+                onclick="saveHomework(${id || "null"})">
+                Зберегти
+            </button>
+
+        </div>
+    `;
+
+    openModal();
+}
+
+
+async function saveHomework(id){
+
+    const payload = {
+
+        subject:
+            document.getElementById("formSubject")
+                .value.trim(),
+
+        task:
+            document.getElementById("formTask")
+                .value.trim(),
+
+        due_date:
+            document.getElementById("formDueDate")
+                .value.trim()
+    };
+
+    if(!payload.subject || !payload.task){
+
+        showToast("Заповни предмет і завдання");
+        return;
+    }
+
+    let result;
+
+    if(id){
+
+        result =
+            await supabaseClient
+                .from("homework")
+                .update(payload)
+                .eq("id",id);
+
+    }else{
+
+        result =
+            await supabaseClient
+                .from("homework")
+                .insert(payload);
+    }
+
+    if(result.error){
+
+        showToast(result.error.message);
+        return;
+    }
+
+    closeModal();
+
+    await loadHomework();
+
+    renderHomework();
+
+    showToast("Домашку збережено");
+}
+
+
+async function deleteHomework(id){
+
+    if(!confirm("Видалити домашнє завдання?"))
+        return;
+
+    const {error} =
+        await supabaseClient
+            .from("homework")
+            .delete()
+            .eq("id",id);
+
+    if(error){
+
+        showToast(error.message);
+        return;
+    }
+
+    await loadHomework();
+
+    renderHomework();
+
+    showToast("Домашку видалено");
+}
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+async function loadEvents(){
+
+    const {data,error} =
+        await supabaseClient
+            .from("events")
+            .select("*")
+            .order("id",{ascending:false});
+
+    if(error){
+
+        console.error(error);
+        return;
+    }
+
+    eventsData = data || [];
+}
+
+
+function renderEvents(){
+
+    const list =
+        document.getElementById("eventsList");
+
+    if(!eventsData.length){
+
+        list.innerHTML =
+            `<div class="empty">
+                Подій поки немає.
+             </div>`;
+
+        return;
+    }
+
+    list.innerHTML =
+        eventsData.map(item=>`
+
+        <div class="item">
+
+            <div class="item-head">
+
+                <div>
+                    <div class="item-title">
+                        🎉 ${escapeHTML(item.title)}
+                    </div>
+
+                    <div class="item-date">
+                        ${escapeHTML(item.event_date || "Дата не вказана")}
+                    </div>
+                </div>
+
+                ${
+                    isAdmin
+                    ? `
+                    <div>
+
+                        <button
+                            class="small-btn edit-btn"
+                            onclick="openEventModal(${item.id})">
+                            ✏️
+                        </button>
+
+                        <button
+                            class="small-btn delete-btn"
+                            onclick="deleteEvent(${item.id})">
+                            🗑️
+                        </button>
+
+                    </div>
+                    `
+                    : ""
+                }
+
+            </div>
+
+            <div class="item-description">
+                ${escapeHTML(item.description || "")}
+            </div>
+
+        </div>
+
+    `).join("");
+}
+
+
+function openEventModal(id=null){
+
+    if(!isAdmin) return;
+
+    const item =
+        id
+        ? eventsData.find(x=>x.id===id)
+        : null;
+
+    document.getElementById("modalTitle").textContent =
+        item ? "Редагувати подію" : "Нова подія";
+
+    document.getElementById("modalContent").innerHTML = `
+
+        <div class="field">
+            <label>Назва</label>
+
+            <input
+                id="formTitle"
+                value="${escapeAttr(item?.title || "")}"
+                placeholder="Наприклад: Посвята"
+            >
+        </div>
+
+        <div class="field">
+            <label>Опис</label>
+
+            <textarea
+                id="formDescription"
+                placeholder="Деталі події">${escapeHTML(item?.description || "")}</textarea>
+        </div>
+
+        <div class="field">
+            <label>Дата</label>
+
+            <input
+                id="formEventDate"
+                value="${escapeAttr(item?.event_date || "")}"
+                placeholder="02.10.2026"
+            >
+        </div>
+
+        <div class="form-actions">
+
+            <button class="secondary" onclick="closeModal()">
+                Скасувати
+            </button>
+
+            <button
+                class="primary"
+                onclick="saveEvent(${id || "null"})">
+                Зберегти
+            </button>
+
+        </div>
+    `;
+
+    openModal();
+}
+
+
+async function saveEvent(id){
+
+    const payload = {
+
+        title:
+            document.getElementById("formTitle")
+                .value.trim(),
+
+        description:
+            document.getElementById("formDescription")
+                .value.trim(),
+
+        event_date:
+            document.getElementById("formEventDate")
+                .value.trim()
+    };
+
+    if(!payload.title){
+
+        showToast("Введи назву події");
+        return;
+    }
+
+    let result;
+
+    if(id){
+
+        result =
+            await supabaseClient
+                .from("events")
+                .update(payload)
+                .eq("id",id);
+
+    }else{
+
+        result =
+            await supabaseClient
+                .from("events")
+                .insert(payload);
+    }
+
+    if(result.error){
+
+        showToast(result.error.message);
+        return;
+    }
+
+    closeModal();
+
+    await loadEvents();
+
+    renderEvents();
+
+    showToast("Подію збережено");
+}
+
+
+async function deleteEvent(id){
+
+    if(!confirm("Видалити подію?"))
+        return;
+
+    const {error} =
+        await supabaseClient
+            .from("events")
+            .delete()
+            .eq("id",id);
+
+    if(error){
+
+        showToast(error.message);
+        return;
+    }
+
+    await loadEvents();
+
+    renderEvents();
+
+    showToast("Подію видалено");
+}
+
+
+/* =========================================================
+   DUTY
+========================================================= */
+
+async function loadDuty(){
+
+    const {data,error} =
+        await supabaseClient
+            .from("duty")
+            .select("*")
+            .order("id",{ascending:true});
+
+    if(error){
+
+        console.error(error);
+        return;
+    }
+
+    dutyData = data || [];
+}
+
+
+function renderDuty(){
+
+    const list =
+        document.getElementById("dutyList");
+
+    if(!dutyData.length){
+
+        list.innerHTML =
+            `<div class="empty">
+                Чергових поки не призначено.
+             </div>`;
+
+        return;
+    }
+
+    list.innerHTML =
+        dutyData.map(item=>`
+
+        <div class="duty-card">
+
+            <div class="duty-icon">
+                🧹
+            </div>
+
+            <div style="flex:1">
+
+                <div class="item-title">
+                    ${escapeHTML(item.day)}
+                </div>
+
+                <div class="muted" style="margin-top:5px">
+                    ${escapeHTML(item.student)}
+                </div>
+
+            </div>
+
+            ${
+                isAdmin
+                ? `
+                <div>
+
+                    <button
+                        class="small-btn edit-btn"
+                        onclick="openDutyModal(${item.id})">
+                        ✏️
+                    </button>
+
+                    <button
+                        class="small-btn delete-btn"
+                        onclick="deleteDuty(${item.id})">
+                        🗑️
+                    </button>
+
+                </div>
+                `
+                : ""
+            }
+
+        </div>
+
+    `).join("");
+}
+
+
+function openDutyModal(id=null){
+
+    if(!isAdmin) return;
+
+    const item =
+        id
+        ? dutyData.find(x=>x.id===id)
+        : null;
+
+    document.getElementById("modalTitle").textContent =
+        item ? "Редагувати чергування" : "Додати чергового";
+
+    document.getElementById("modalContent").innerHTML = `
+
+        <div class="field">
+            <label>День</label>
+
+            <select id="formDutyDay">
+
+                ${days.map(day=>`
+                    <option
+                        ${item?.day===day ? "selected":""}>
+                        ${day}
+                    </option>
+                `).join("")}
+
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Учень</label>
+
+            <input
+                id="formStudent"
+                value="${escapeAttr(item?.student || "")}"
+                placeholder="Ім'я та прізвище"
+            >
+        </div>
+
+        <div class="form-actions">
+
+            <button class="secondary" onclick="closeModal()">
+                Скасувати
+            </button>
+
+            <button
+                class="primary"
+                onclick="saveDuty(${id || "null"})">
+                Зберегти
+            </button>
+
+        </div>
+    `;
+
+    openModal();
+}
+
+
+async function saveDuty(id){
+
+    const payload = {
+
+        day:
+            document.getElementById("formDutyDay")
+                .value,
+
+        student:
+            document.getElementById("formStudent")
+                .value.trim()
+    };
+
+    if(!payload.student){
+
+        showToast("Введи ім'я учня");
+        return;
+    }
+
+    let result;
+
+    if(id){
+
+        result =
+            await supabaseClient
+                .from("duty")
+                .update(payload)
+                .eq("id",id);
+
+    }else{
+
+        result =
+            await supabaseClient
+                .from("duty")
+                .insert(payload);
+    }
+
+    if(result.error){
+
+        showToast(result.error.message);
+        return;
+    }
+
+    closeModal();
+
+    await loadDuty();
+
+    renderDuty();
+
+    showToast("Чергового збережено");
+}
+
+
+async function deleteDuty(id){
+
+    if(!confirm("Видалити це чергування?"))
+        return;
+
+    const {error} =
+        await supabaseClient
+            .from("duty")
+            .delete()
+            .eq("id",id);
+
+    if(error){
+
+        showToast(error.message);
+        return;
+    }
+
+    await loadDuty();
+
+    renderDuty();
+
+    showToast("Чергового видалено");
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function openPage(page){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(el=>{
+            el.classList.remove("active");
+        });
+
+    const target =
+        document.getElementById("page-" + page);
+
+    if(target)
+        target.classList.add("active");
+
+    const buttons =
+        document.querySelectorAll(".nav-btn");
+
+    buttons.forEach(btn=>{
+        btn.classList.remove("active");
+    });
+
+    const map = {
+        home:0,
+        schedule:1,
+        homework:2,
+        events:3,
+        duty:4
+    };
+
+    if(map[page] !== undefined)
+        buttons[map[page]].classList.add("active");
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+function openModal(){
+
+    document
+        .getElementById("modal")
+        .classList.add("show");
+}
+
+function closeModal(){
+
+    document
+        .getElementById("modal")
+        .classList.remove("show");
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout(){
+
+    await supabaseClient.auth.signOut();
+
+    currentUser = null;
+    isAdmin = false;
+
+    showAuthScreen();
+}
+
+
+function showAuthScreen(){
+
+    document
+        .getElementById("app")
+        .classList.add("hidden");
+
+    document
+        .getElementById("authScreen")
+        .classList.remove("hidden");
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer =
+        setTimeout(()=>{
+            toast.classList.remove("show");
+        },3000);
+}
+
+
+/* =========================================================
+   SECURITY / HTML ESCAPING
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+
+function escapeAttr(value){
+
+    return escapeHTML(value);
+}
+
+
+/* =========================================================
+   AUTO REFRESH
+========================================================= */
+
+setInterval(async ()=>{
+
+    if(!currentUser) return;
+
+    await loadAllData();
+
+    renderSchedule();
+    renderHomework();
+    renderEvents();
+    renderDuty();
+
+},20000);
+
+</script>
+
+</body>
+</html>
